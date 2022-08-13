@@ -11,6 +11,8 @@ import sat_utils as sat_utils
 
 import json
 import time
+import agile_sat_utils
+import env_orekit
 
 
 # opening a file that contains a sample shared storage
@@ -56,13 +58,48 @@ cubesat_2_param = sat_utils.get_keplerian_parameters(state_2)
 cubesat_2_param.update({"attitude": "cubesat_1"})
 cubesat_2_param.update({"frame": "EME"})
 
+
+
+year, month, day, hr, minute, sec = 2018, 8, 1, 9, 30, 00.00
+date = [year, month, day, hr, minute, sec]
+
+dry_mass = 500.0
+fuel_mass = 150.0
+mass = [dry_mass, fuel_mass]
+duration = 24.0 * 60.0 ** 2 * 2
+
+# set the sc initial state
+a = 10000.0e3  # semi major axis (m) (altitude)
+e = 0.1  # eccentricity
+i = 5.0  # inclination
+omega = 10.0  # perigee argument
+raan = 10.0  # right ascension of ascending node
+lM = 10.0  # mean anomaly
+state = [a, e, i, omega, raan, lM]
+
+# target state
+a_targ = 35000.0e3  # altitude
+e_targ = 0.3
+i_targ = 10.0
+omega_targ = 10.0
+raan_targ = 10.0
+lM_targ = 10.0
+state_targ = [a_targ, e_targ, i_targ, omega_targ, raan_targ, lM_targ]
+stepT = 500.0
+
+
+env = env_orekit.OrekitEnv(state, state_targ, date, duration, mass, stepT)
+n_actions = env.r_initial_state
+print(n_actions)
+
+
 # Checking to see if simulation_timestep_propagate updated params correctly
 # self.assertTrue(shared_storage["swarm"]["cubesat_1"]["orbit"] == cubesat_1_param)
 # self.assertTrue(shared_storage["swarm"]["cubesat_2"]["orbit"] == cubesat_2_param)
 # self.assertTrue(shared_storage["swarm"]["cubesat_1"]["orbit"]["attitude"] == "cubesat_2")
 # self.assertTrue(shared_storage["swarm"]["cubesat_2"]["orbit"]["attitude"] == "cubesat_1")
-print(state_1)
-print(state_1.attitude)
+# print(state_1)
+# print(state_1.attitude)
 # print(shared_storage["swarm"]["cubesat_2"]["target_in_view"])
 # # Making sure that phonebook gets updated properly
 # if i <= 48:
